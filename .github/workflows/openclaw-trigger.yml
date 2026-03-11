@@ -1,7 +1,7 @@
 name: OpenClaw Auto Trigger
 
 on:
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
   push:
     branches: [main, master, dev, develop]
   issues:
