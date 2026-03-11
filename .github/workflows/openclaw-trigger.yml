@@ -36,21 +36,9 @@ jobs:
           REF: ${{ github.ref }}
           EVENT_URL: ${{ github.event.html_url || github.event.pull_request.html_url || github.event.issue.html_url || github.event.repository.html_url || 'N/A' }}
         run: |
-          MESSAGE="🔔 GitHub 事件通知
-          
-  📌 事件类型：${EVENT_NAME}
-  🔧 动作：${EVENT_ACTION}
-  📦 仓库：${REPOSITORY}
-  👤 操作者：${ACTOR}
-  🌿 引用：${REF}
-  🔗 链接：${EVENT_URL}
-  
-  ---
-  *自动发送自 OpenClaw*"
-          
+          echo "Event: ${EVENT_NAME}, Action: ${EVENT_ACTION}"
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
             -d "chat_id=${TELEGRAM_CHAT}" \
-            -d "text=${MESSAGE}" \
+            -d "text=GitHub: ${EVENT_NAME} by ${ACTOR}" \
             -d "parse_mode=Markdown"
-          
-          echo "✅ Telegram 通知已发送"
+          echo "Done"
