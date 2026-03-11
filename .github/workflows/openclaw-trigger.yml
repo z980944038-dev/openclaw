@@ -1,6 +1,7 @@
 name: OpenClaw Auto Trigger
 
 on:
+  workflow_dispatch:  # 允许手动触发
   push:
     branches: [main, master, dev, develop]
   issues:
@@ -19,7 +20,7 @@ jobs:
       - name: Debug Event Info
         run: |
           echo "Event: ${{ github.event_name }}"
-          echo "Action: ${{ github.event.action }}"
+          echo "Action: ${{ github.event.action || 'N/A' }}"
           echo "Repository: ${{ github.repository }}"
           echo "Ref: ${{ github.ref }}"
           echo "Actor: ${{ github.actor }}"
@@ -29,11 +30,11 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
           EVENT_NAME: ${{ github.event_name }}
-          EVENT_ACTION: ${{ github.event.action }}
+          EVENT_ACTION: ${{ github.event.action || 'manual' }}
           REPOSITORY: ${{ github.repository }}
           ACTOR: ${{ github.actor }}
           REF: ${{ github.ref }}
-          EVENT_URL: ${{ github.event.html_url || github.event.pull_request.html_url || github.event.issue.html_url || 'N/A' }}
+          EVENT_URL: ${{ github.event.html_url || github.event.pull_request.html_url || github.event.issue.html_url || github.event.repository.html_url || 'N/A' }}
         run: |
           MESSAGE="🔔 GitHub 事件通知
           
