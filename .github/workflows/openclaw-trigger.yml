@@ -2,7 +2,7 @@ name: OpenClaw Auto Trigger
 
 on:
   push:
-    branca1s: [main, master, dev, develop]
+    branches: [main, master, dev, develop]
   issues:
     types: [opened, closed, reopened, labeled]
   pull_request:
@@ -23,10 +23,33 @@ jobs:
           echo "Repository: ${{ github.repository }}"
           echo "Ref: ${{ github.ref }}"
           echo "Actor: ${{ github.actor }}"
-        
-      - name: Send notification (placeholder)
+          
+      - name: Send Telegram Notification
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          REPOSITORY: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          REF: ${{ github.ref }}
+          EVENT_URL: ${{ github.event.html_url || github.event.pull_request.html_url || github.event.issue.html_url || 'N/A' }}
         run: |
-          echo "Sending notification to OpenClaw..."
-          echo "Event: ${{ github.event_name }}"
-          echo "Repo: ${{ github.repository }}"
-          echo "Actor: ${{ github.actor }}"
+          MESSAGE="🔔 GitHub 事件通知
+          
+  📌 事件类型：${EVENT_NAME}
+  🔧 动作：${EVENT_ACTION}
+  📦 仓库：${REPOSITORY}
+  👤 操作者：${ACTOR}
+  🌿 引用：${REF}
+  🔗 链接：${EVENT_URL}
+  
+  ---
+  *自动发送自 OpenClaw*"
+          
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT}" \
+            -d "text=${MESSAGE}" \
+            -d "parse_mode=Markdown"
+          
+          echo "✅ Telegram 通知已发送"
